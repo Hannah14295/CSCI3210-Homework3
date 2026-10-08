@@ -5,6 +5,7 @@ function Dino() {
   const dinoRef = useRef();
   const cactusRef = useRef();
   const [score, setScore] = useState(0);
+  const [cactusCount, setCactusCount] = useState(1);
 
   const jump = () => {
     if (!!dinoRef.current && dinoRef.current.classList != "jump") {
@@ -14,6 +15,12 @@ function Dino() {
       }, 300);
     }
   };
+
+  /* randomizing cactuses */
+  const randomizeCactus = () => {
+    const count = Math.floor(Math.random() * 3) + 1;
+    setCactusCount(count);
+  }
 
   useEffect(() => {
     const isAlive = setInterval(function () {
@@ -45,11 +52,29 @@ function Dino() {
     return () => document.removeEventListener("keydown", jump);
   }, []);
 
+  /* detecting when an animation restarts */
+  useEffect(() => {
+    const cactus = cactusRef.current;
+    const handleAnimationIteration = () => {
+      randomizeCactus();
+    };
+
+    cactus.addEventListener("animationiteration", handleAnimationIteration);
+
+    return () => {
+      cactus.removeEventListener("animationiteration", handleAnimationIteration);
+    };
+  }, []);
+
   return (
     <div className="game">
       Score : {score}
       <div id="dino" ref={dinoRef}></div>
-      <div id="cactus" ref={cactusRef}></div>
+      <div id="cactus" ref={cactusRef}>
+        {Array.from({length: cactusCount}, (_, index) => (
+          <div className="cactus" key={index}></div>
+        ))}
+      </div>
     </div>
   );
 }

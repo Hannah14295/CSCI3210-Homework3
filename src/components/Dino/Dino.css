@@ -41,16 +41,18 @@
 }
 
 #cactus {
-  width: 20px;
-  height: 40px;
   position: relative;
   top: 110px;
   left: 580px;
+  animation: block 1s infinite linear;
+  display: flex;
+}
 
+.cactus {
+  width: 20px;
+  height: 40px;
   background-image: url("img/cactus.png");
   background-size: 20px 40px;
-
-  animation: block 1s infinite linear;
 }
 
 @keyframes block {
