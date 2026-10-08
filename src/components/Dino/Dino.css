@@ -1,8 +1,9 @@
 .game {
-  width: 600px;
+  width: 1000px;
   height: 225px;
   border: 1px solid black;
   margin: auto;
+  overflow: hidden;
 }
 
 #dino {
@@ -12,39 +13,48 @@
   background-size: 50px 50px;
   position: relative;
   top: 150px;
+  left: 250px;
 }
 
 .jump {
-  animation: jump 0.3s linear;
+  animation: jump 0.7s linear;
 }
 
 @keyframes jump {
   0% {
-    top: 150px;
+   transform: translateY(0);
   }
 
-  30% {
-    top: 130px;
+  20% {
+    transform: translateY(-50);
+  }
+
+  40% {
+    transform: translateY(-90);
   }
 
   50% {
-    top: 80px;
+    transform: translateY(-100px);
+  }
+
+  60% {
+    transform: translateY(-90);
   }
 
   80% {
-    top: 130px;
+    transform: translateY(-50);
   }
 
   100% {
-    top: 150px;
+    transform: translateY(0);
   }
 }
 
 #cactus {
   position: relative;
   top: 110px;
-  left: 580px;
-  animation: block 1s infinite linear;
+  left: 1000px;
+  animation: block 1.5s infinite linear;
   display: flex;
 }
 
@@ -57,10 +67,10 @@
 
 @keyframes block {
   0% {
-    left: 580px;
+    left: 1000px;
   }
 
   100% {
-    left: -5px;
+    left: -50px;
   }
 }

@@ -4,15 +4,17 @@ import "./Dino.css";
 function Dino() {
   const dinoRef = useRef();
   const cactusRef = useRef();
+  const scoreRef = useRef(0);
   const [score, setScore] = useState(0);
   const [cactusCount, setCactusCount] = useState(1);
 
   const jump = () => {
-    if (!!dinoRef.current && dinoRef.current.classList != "jump") {
+    if (dinoRef.current && !dinoRef.current.classList.contains("jump")) {
       dinoRef.current.classList.add("jump");
-      setTimeout(function () {
+
+      setTimeout(() => {
         dinoRef.current.classList.remove("jump");
-      }, 300);
+      }, 700);
     }
   };
 
@@ -24,28 +26,42 @@ function Dino() {
 
   useEffect(() => {
     const isAlive = setInterval(function () {
-      // get current dino Y position
-      const dinoTop = parseInt(
-        getComputedStyle(dinoRef.current).getPropertyValue("top")
-      );
-
-      // get current cactus X position
-      let cactusLeft = parseInt(
-        getComputedStyle(cactusRef.current).getPropertyValue("left")
-      );
+      const dino = dinoRef.current;
+      const dinoRect = dino.getBoundingClientRect();
+      const cactuses = document.querySelectorAll(".cactus");
 
       // detect collision
-      if (cactusLeft < 40 && cactusLeft > 0 && dinoTop >= 140) {
+      let collision = false;
+
+      cactuses.forEach((cactus) => {
+        const cactusRect = cactus.getBoundingClientRect();
+
+        if (
+          dinoRect.left + 10 < cactusRect.right &&
+          dinoRect.right - 10> cactusRect.left &&
+          dinoRect.top + 10< cactusRect.bottom &&
+          dinoRect.bottom - 5> cactusRect.top
+        ) {
+          collision = true;
+        }
+      })
+
+      if (collision) {
         // collision
-        alert("Game Over! Your Score : " + score);
+        alert("Game Over! Your Score : " + scoreRef.current);
         setScore(0);
+        scoreRef.current = 0;
       } else {
-        setScore(score + 1);
+        setScore((currentScore) => {
+          const newScore = currentScore + 1;
+          scoreRef.current = newScore;
+          return newScore;
+        });
       }
     }, 10);
 
     return () => clearInterval(isAlive);
-  });
+  }, []);
 
   useEffect(() => {
     document.addEventListener("keydown", jump);
