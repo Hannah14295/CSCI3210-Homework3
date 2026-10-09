@@ -7,6 +7,8 @@ function Dino() {
   const scoreRef = useRef(0);
   const [score, setScore] = useState(0);
   const [cactusCount, setCactusCount] = useState(1);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   const jump = () => {
     if (dinoRef.current && !dinoRef.current.classList.contains("jump")) {
@@ -18,13 +20,33 @@ function Dino() {
     }
   };
 
-  /* randomizing cactuses */
+  // randomizing cactuses
   const randomizeCactus = () => {
     const count = Math.floor(Math.random() * 3) + 1;
     setCactusCount(count);
-  }
+  };
+
+  // start function
+  const startGame = () => {
+    const cactus = cactusRef.current;
+
+    // reset the cactus animation
+    if (cactus) {
+      cactus.classList.remove("running");
+      void cactus.offsetWidth;
+      cactus.classList.add("running")
+    }
+
+    // reset the game state
+    setScore(0);
+    scoreRef.current = 0;
+    setGameOver(false);
+    setGameStarted(true);
+  };
 
   useEffect(() => {
+    if (!gameStarted) return;
+
     const isAlive = setInterval(function () {
       const dino = dinoRef.current;
       const dinoRect = dino.getBoundingClientRect();
@@ -49,8 +71,8 @@ function Dino() {
       if (collision) {
         // collision
         alert("Game Over! Your Score : " + scoreRef.current);
-        setScore(0);
-        scoreRef.current = 0;
+        setGameStarted(false);
+        setGameOver(true);
       } else {
         setScore((currentScore) => {
           const newScore = currentScore + 1;
@@ -61,14 +83,26 @@ function Dino() {
     }, 10);
 
     return () => clearInterval(isAlive);
-  }, []);
+  }, [gameStarted]);
 
   useEffect(() => {
-    document.addEventListener("keydown", jump);
-    return () => document.removeEventListener("keydown", jump);
-  }, []);
+    const handleKeyDown = (event) => {
+      if (event.code === "Space") {
+        event.preventDefault();
 
-  /* detecting when an animation restarts */
+        if (!gameStarted) {
+          startGame();
+        } else {
+          jump();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [gameStarted]);
+
+  // detecting when an animation restarts
   useEffect(() => {
     const cactus = cactusRef.current;
     const handleAnimationIteration = () => {
@@ -84,9 +118,12 @@ function Dino() {
 
   return (
     <div className="game">
+      <button onClick={startGame}>
+        {gameOver ? "Play Again" : "Start Game"}
+      </button>
       Score : {score}
       <div id="dino" ref={dinoRef}></div>
-      <div id="cactus" ref={cactusRef}>
+      <div id="cactus" ref={cactusRef} className={gameStarted ? "running" : ""}>
         {Array.from({length: cactusCount}, (_, index) => (
           <div className="cactus" key={index}></div>
         ))}

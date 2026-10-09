@@ -54,8 +54,11 @@
   position: relative;
   top: 110px;
   left: 1000px;
-  animation: block 1.5s infinite linear;
   display: flex;
+}
+
+#cactus.running {
+  animation: block 1.5s infinite linear;
 }
 
 .cactus {
