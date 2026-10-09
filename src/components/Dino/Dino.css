@@ -16,40 +16,6 @@
   left: 250px;
 }
 
-.jump {
-  animation: jump 0.7s linear;
-}
-
-@keyframes jump {
-  0% {
-   transform: translateY(0);
-  }
-
-  20% {
-    transform: translateY(-50);
-  }
-
-  40% {
-    transform: translateY(-90);
-  }
-
-  50% {
-    transform: translateY(-100px);
-  }
-
-  60% {
-    transform: translateY(-90);
-  }
-
-  80% {
-    transform: translateY(-50);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
 #cactus {
   position: relative;
   top: 110px;
@@ -57,23 +23,9 @@
   display: flex;
 }
 
-#cactus.running {
-  animation: block 1.5s infinite linear;
-}
-
 .cactus {
   width: 20px;
   height: 40px;
   background-image: url("img/cactus.png");
   background-size: 20px 40px;
-}
-
-@keyframes block {
-  0% {
-    left: 1000px;
-  }
-
-  100% {
-    left: -50px;
-  }
 }

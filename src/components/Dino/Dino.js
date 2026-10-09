@@ -2,22 +2,38 @@ import React, { useEffect, useRef, useState } from "react";
 import "./Dino.css";
 
 function Dino() {
-  const dinoRef = useRef();
-  const cactusRef = useRef();
+  const dinoRef = useRef(null);
+  const cactusRef = useRef(null);
+  
   const scoreRef = useRef(0);
+  const velocityY = useRef(0);
+  const dinoY = useRef(0);
+  const cactusX = useRef(1000);
+
   const [score, setScore] = useState(0);
   const [cactusCount, setCactusCount] = useState(1);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
 
-  const jump = () => {
-    if (dinoRef.current && !dinoRef.current.classList.contains("jump")) {
-      dinoRef.current.classList.add("jump");
+  // physics settings
+  const gravity = 2200;
+  const jumpStrength = 550;
+  const groundY = 0;
+  const cactusSpeed = 400;
 
-      setTimeout(() => {
-        dinoRef.current.classList.remove("jump");
-      }, 700);
+  const jump = () => {
+    if (dinoY.current === groundY) {
+      velocityY.current = -jumpStrength;
     }
+  };
+
+  const isColliding = (a, b) => {
+    return (
+      a.left < b.right &&
+      a.right > b.left &&
+      a.top < b.bottom &&
+      a.bottom > b.top
+    );
   };
 
   // randomizing cactuses
@@ -28,18 +44,19 @@ function Dino() {
 
   // start function
   const startGame = () => {
-    const cactus = cactusRef.current;
+    // reset the dinosaur's physics
+    dinoY.current = 0;
+    velocityY.current = 0;
 
-    // reset the cactus animation
-    if (cactus) {
-      cactus.classList.remove("running");
-      void cactus.offsetWidth;
-      cactus.classList.add("running")
-    }
+    // reset the cactus position
+    cactusX.current = 1000;
+    randomizeCactus();
 
-    // reset the game state
+    // reset the score
     setScore(0);
     scoreRef.current = 0;
+
+    // start a fresh game
     setGameOver(false);
     setGameStarted(true);
   };
@@ -47,42 +64,75 @@ function Dino() {
   useEffect(() => {
     if (!gameStarted) return;
 
-    const isAlive = setInterval(function () {
-      const dino = dinoRef.current;
-      const dinoRect = dino.getBoundingClientRect();
-      const cactuses = document.querySelectorAll(".cactus");
+    let animationId;
+    let lastTime = null;
 
-      // detect collision
-      let collision = false;
+    const update = (timestamp) => {
+      if (lastTime !== null) {
+        const deltaTime = (timestamp - lastTime) / 1000;
+        
+        scoreRef.current += deltaTime * 10;
+        setScore(Math.floor(scoreRef.current));
 
-      cactuses.forEach((cactus) => {
-        const cactusRect = cactus.getBoundingClientRect();
+        // update veritical volocity using gravity
+        velocityY.current += gravity * deltaTime;
 
-        if (
-          dinoRect.left + 10 < cactusRect.right &&
-          dinoRect.right - 10> cactusRect.left &&
-          dinoRect.top + 10< cactusRect.bottom &&
-          dinoRect.bottom - 5> cactusRect.top
-        ) {
-          collision = true;
+        // update vertical position
+        dinoY.current += velocityY.current * deltaTime;
+
+        // stop the dino at the ground
+        if (dinoY.current > groundY) {
+          dinoY.current = groundY;
+          velocityY.current = 0;
         }
-      })
 
-      if (collision) {
-        // collision
-        alert("Game Over! Your Score : " + scoreRef.current);
-        setGameStarted(false);
-        setGameOver(true);
-      } else {
-        setScore((currentScore) => {
-          const newScore = currentScore + 1;
-          scoreRef.current = newScore;
-          return newScore;
-        });
+        // apply the position to the dino element
+        if (dinoRef.current) {
+          dinoRef.current.style.transform = `translateY(${dinoY.current}px)`;
+        }
+
+        // move the cactus from right to left
+        cactusX.current -= cactusSpeed * deltaTime;
+
+        // reset the cactus after it leaves the screen
+        if (cactusX.current < -(cactusRef.current?.offsetWidth ?? 20)) {
+          cactusX.current = 1000;
+          randomizeCactus();
+        }
+
+        // apply the cactus position
+        if (cactusRef.current) {
+          cactusRef.current.style.left = `${cactusX.current}px`;
+        }
+
+        // check for collisions
+        const dino = dinoRef.current;
+        const cactuses = cactusRef.current?.querySelectorAll(".cactus");
+
+        if (dino && cactuses) {
+          const dinoRect = dino.getBoundingClientRect();
+
+          for (const cactus of cactuses) {
+            const cactusRect = cactus.getBoundingClientRect();
+
+            const collision = isColliding(dinoRect, cactusRect);
+
+            if (collision) {
+              setGameStarted(false);
+              setGameOver(true);
+              return;
+            }
+          }
+        }
       }
-    }, 10);
 
-    return () => clearInterval(isAlive);
+      lastTime = timestamp;
+      animationId = requestAnimationFrame(update);
+    };
+
+    animationId = requestAnimationFrame(update);
+
+    return () => cancelAnimationFrame(animationId);
   }, [gameStarted]);
 
   useEffect(() => {
@@ -96,32 +146,18 @@ function Dino() {
           jump();
         }
       }
-    }
+    };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [gameStarted]);
-
-  // detecting when an animation restarts
-  useEffect(() => {
-    const cactus = cactusRef.current;
-    const handleAnimationIteration = () => {
-      randomizeCactus();
-    };
-
-    cactus.addEventListener("animationiteration", handleAnimationIteration);
-
-    return () => {
-      cactus.removeEventListener("animationiteration", handleAnimationIteration);
-    };
-  }, []);
 
   return (
     <div className="game">
       <button onClick={startGame}>
         {gameOver ? "Play Again" : "Start Game"}
       </button>
-      Score : {score}
+      Score: {score}
       <div id="dino" ref={dinoRef}></div>
       <div id="cactus" ref={cactusRef} className={gameStarted ? "running" : ""}>
         {Array.from({length: cactusCount}, (_, index) => (
