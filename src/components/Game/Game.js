@@ -41,6 +41,17 @@ function Game() {
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+
+  const [bestScore, setBestScore] = useState(() => {
+    try {
+      const savedScore = Number(localStorage.getItem("butterflyDashBestScore"));
+      return Number.isFinite(savedScore) && savedScore >= 0 ? Math.floor(savedScore) : 0;
+    } catch {
+      return 0;
+    }
+  });
+  const [newBest, setNewBest] = useState(false);
+
   const sceneIndex = Math.floor(score / pointsPerScene) % scenes.length;
   const isSpring = sceneIndex === 2 || sceneIndex === 3;
   const isWinter = sceneIndex === 4 || sceneIndex === 5;
@@ -108,9 +119,33 @@ function Game() {
     scoreRef.current = 0;
 
     // start a fresh game
+    setNewBest(false);
     setGameOver(false);
     setGameStarted(true);
   };
+
+  useEffect(() => {
+    if (!gameOver) return;
+
+    const finalScore = Math.floor(scoreRef.current);
+
+    if (finalScore > bestScore) {
+      setBestScore(finalScore);
+      setNewBest(true);
+    }
+  }, [gameOver, bestScore]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "butterflyDashBestScore",
+        String(bestScore)
+      );
+    } catch {
+
+    }
+  }, [bestScore]);
+
 
   useEffect(() => {
     if (!gameStarted) return;
@@ -177,8 +212,8 @@ function Game() {
             const obstacleElements = obstacleGroup.querySelectorAll(".obstacle-sprite");
             const hitBoxSettings = obstacleHitBoxSettings[obstacle.type];
 
-            for (const obstaclElement of obstacleElements) {
-              const obstacleRect = getHitBox(obstaclElement, hitBoxSettings.insetX, hitBoxSettings.insetY);
+            for (const obstacleElement of obstacleElements) {
+              const obstacleRect = getHitBox(obstacleElement, hitBoxSettings.insetX, hitBoxSettings.insetY);
 
               if (isColliding(playerRect, obstacleRect)) {
                 setGameStarted(false);
@@ -288,6 +323,8 @@ function Game() {
         <span className="score-display">Score: {score}</span>
       </div>
 
+      <div className="best-score-display">Best: {bestScore}</div>
+
       <div id="player" ref={playerRef}></div>
 
       {obstacles.map((obstacle) => (
@@ -320,6 +357,11 @@ function Game() {
             <h2 id="game-over-title">Oops! 🌸</h2>
             <p id="game-over-description">Your butterfly bumped into a flower!</p>
             <p className="final-score">Final score: {score}</p>
+            <p>Best score: {bestScore}</p>
+
+            {newBest && (
+              <p className="new-best-message">New best score! 🏆</p>
+            )}
 
             <button 
               className="try-again-button"

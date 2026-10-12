@@ -18,11 +18,12 @@
 
 .game-header h1{
   font-family: "Comic Sans MS", sans-serif;
-  font-size: 35px;
+  font-size: 40px;
   color: #FF0052;
 }
 
 .game-header p{
   font-family: "Comic Sans MS", sans-serif;
+  font-size: 20px;
   color: #571089;
 }

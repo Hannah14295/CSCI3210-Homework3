@@ -6,7 +6,7 @@ function App() {
     <div className="App">
       <header className="game-header">
         <h1>Butterfly Dash</h1>
-        <p>Press the Space Bar to start!</p>
+        <p>Press the Space Bar to begin!</p>
       </header>
 
       <Game />
