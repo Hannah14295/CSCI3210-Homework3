@@ -10,7 +10,7 @@
   background-color: #b7dbea;
 }
 
-#dino {
+#player {
   width: 50px;
   height: 50px;
   background-image: url("./img/butterfly.png");
@@ -28,11 +28,12 @@
   display: flex;
 }
 
-.cactus {
+.flower {
   width: 20px;
   height: 40px;
   background-image: url("./img/flower.png");
   background-size: 20px 40px;
+  background-repeat: no-repeat;
 }
 
 /*& background */

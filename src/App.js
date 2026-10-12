@@ -1,5 +1,5 @@
 import "./App.css";
-import Dino from "./components/Dino/Dino";
+import Game from "./components/Game/Game";
 
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
         <p>Press the Space Bar to start!</p>
       </header>
 
-      <Dino />
+      <Game />
     </div>
   );
 }

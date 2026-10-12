@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import "./Dino.css";
+import "./Game.css";
 
 import summerDay from "./img/summer-day.png";
 import summerNight from "./img/summer-night.png";
@@ -18,15 +18,22 @@ const scenes = [
   { name: "Winter Night", image: winterNight },
 ];
 
-const pointsPerScene = 50;
+const pointsPerScene = 40;
 
-function Dino() {
-  const dinoRef = useRef(null);
-  const cactusRefs = useRef({});
+const obstacleHitBoxSettings = {
+  flower: {
+    insetX: 4,
+    insetY: 4,
+  },
+};
+
+function Game() {
+  const playerRef = useRef(null);
+  const obstacleGroupRefs = useRef({});
   
   const scoreRef = useRef(0);
   const velocityY = useRef(0);
-  const dinoY = useRef(0);
+  const playerY = useRef(0);
   const nextObstacleID = useRef(0);
   const obstaclesRef = useRef([]);
 
@@ -42,10 +49,10 @@ function Dino() {
   const gravity = 2000;
   const jumpStrength = 570;
   const groundY = 0;
-  const cactusSpeed = 400;
+  const obstacleSpeed = 400;
 
   const jump = () => {
-    if (dinoY.current === groundY) {
+    if (playerY.current === groundY) {
       velocityY.current = -jumpStrength;
     }
   };
@@ -70,10 +77,11 @@ function Dino() {
     };
   };
 
-  // randomizing cactuses
+  // randomizing objects
   const createObstacle = (x) => {
     return {
       id: nextObstacleID.current++,
+      type: "flower",
       x: x,
       count: Math.floor(Math.random() * 3) + 1,
     };
@@ -81,19 +89,19 @@ function Dino() {
 
   // start function
   const startGame = () => {
-    // reset the dinosaur's physics
-    dinoY.current = 0;
+    // reset the players's physics
+    playerY.current = 0;
     velocityY.current = 0;
 
-    if (dinoRef.current) {
-      dinoRef.current.style.transform = "translateY(0px)";
+    if (playerRef.current) {
+      playerRef.current.style.transform = "translateY(0px)";
     }
 
-    // reset the cactus position
+    // reset the obstacle position
     const initialObstacles = [createObstacle(1000)];
     obstaclesRef.current = initialObstacles;
     setObstacles(initialObstacles);
-    cactusRefs.current = {};
+    obstacleGroupRefs.current = {};
 
     // reset the score
     setScore(0);
@@ -121,23 +129,23 @@ function Dino() {
         velocityY.current += gravity * deltaTime;
 
         // update vertical position
-        dinoY.current += velocityY.current * deltaTime;
+        playerY.current += velocityY.current * deltaTime;
 
-        // stop the dino at the ground
-        if (dinoY.current > groundY) {
-          dinoY.current = groundY;
+        // stop the player at the ground
+        if (playerY.current > groundY) {
+          playerY.current = groundY;
           velocityY.current = 0;
         }
 
-        // apply the position to the dino element
-        if (dinoRef.current) {
-          dinoRef.current.style.transform = `translateY(${dinoY.current}px)`;
+        // apply the position to the player element
+        if (playerRef.current) {
+          playerRef.current.style.transform = `translateY(${playerY.current}px)`;
         }
 
         // move all obstacles and remove those off-screen
         let nextObstacles = obstaclesRef.current.map((obstacle) => ({
           ...obstacle,
-          x: obstacle.x - cactusSpeed * deltaTime,
+          x: obstacle.x - obstacleSpeed * deltaTime,
         }));
 
         nextObstacles = nextObstacles.filter(
@@ -156,22 +164,23 @@ function Dino() {
         setObstacles(nextObstacles);
 
         // check for collisions
-        const dino = dinoRef.current;
+        const player = playerRef.current;
 
-        if (dino) {
-          const dinoRect = getHitBox(dino, 10, 10);
+        if (player) {
+          const playerRect = getHitBox(player, 10, 10);
 
           for (const obstacle of nextObstacles) {
-            const cactusGroup = cactusRefs.current[obstacle.id];
+            const obstacleGroup = obstacleGroupRefs.current[obstacle.id];
 
-            if (!cactusGroup) continue;
+            if (!obstacleGroup) continue;
 
-            const cactuses = cactusGroup.querySelectorAll(".cactus");
+            const obstacleElements = obstacleGroup.querySelectorAll(".obstacle-sprite");
+            const hitBoxSettings = obstacleHitBoxSettings[obstacle.type];
 
-            for (const cactus of cactuses) {
-              const cactusRect = getHitBox(cactus, 4, 4);
+            for (const obstaclElement of obstacleElements) {
+              const obstacleRect = getHitBox(obstaclElement, hitBoxSettings.insetX, hitBoxSettings.insetY);
 
-              if (isColliding(dinoRect, cactusRect)) {
+              if (isColliding(playerRect, obstacleRect)) {
                 setGameStarted(false);
                 setGameOver(true);
                 return;
@@ -233,7 +242,7 @@ function Dino() {
 
       {isSpring && (
         <div 
-          className={`weather-layer rain layer ${gameStarted ? "" : "weather-paused"}`}
+          className={`weather-layer rain-layer ${gameStarted ? "" : "weather-paused"}`}
           aria-hidden="true"
         > 
         {Array.from({ length: 45}, (_, index) => (
@@ -252,7 +261,7 @@ function Dino() {
 
       {isWinter && (
         <div 
-          className={`weather-layer snow layer ${gameStarted ? "" : "weather-paused"}`}
+          className={`weather-layer snow-layer ${gameStarted ? "" : "weather-paused"}`}
           aria-hidden="true"
         > 
         {Array.from({ length: 30}, (_, index) => (
@@ -279,7 +288,7 @@ function Dino() {
         <span className="score-display">Score: {score}</span>
       </div>
 
-      <div id="dino" ref={dinoRef}></div>
+      <div id="player" ref={playerRef}></div>
 
       {obstacles.map((obstacle) => (
         <div
@@ -287,15 +296,15 @@ function Dino() {
           key={obstacle.id}
           ref={(element) => {
             if (element) {
-              cactusRefs.current[obstacle.id] = element;
+              obstacleGroupRefs.current[obstacle.id] = element;
             } else {
-              delete cactusRefs.current[obstacle.id];
+              delete obstacleGroupRefs.current[obstacle.id];
             }
           }}
           style={{ left: `${obstacle.x}px` }}
         >
           {Array.from({ length: obstacle.count }, (_, index) => (
-            <div className="cactus" key={index}></div>
+            <div className="obstacle-sprite flower" key={index}></div>
         ))}
         </div>
       ))}
@@ -325,4 +334,4 @@ function Dino() {
   );
 }
 
-export default Dino;
+export default Game;
