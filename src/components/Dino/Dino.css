@@ -7,9 +7,7 @@
   margin: auto;
   overflow: hidden;
 
-  background-image: url("./img/sunset.png");
-  background-size: cover;
-  background-position: center;
+  background-color: #b7dbea;
 }
 
 #dino {
@@ -20,11 +18,13 @@
   position: absolute; 
   bottom: 15px;
   left: 250px;
+  z-index: 2;
 }
 
 .obstacle {
   position: absolute;
   bottom: 15px;
+  z-index: 2;
   display: flex;
 }
 
@@ -35,6 +35,79 @@
   background-size: 20px 40px;
 }
 
+/*& background */
+.scene-backgrounds {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scene-background {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.weather-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.raindrop {
+  position: absolute;
+  top: -25px;
+  width: 2px;
+  height: 18px;
+  border-radius: 2px;
+  background: rgba(210, 235, 255, 0.75);
+  animation: rain-fall 0.8s linear infinite;
+}
+
+@keyframes rain-fall {
+  from {
+    transform: translate(0, 0) rotate(12deg);
+  }
+
+  to {
+    transform: translate(-55px, 280px) rotate(12deg);
+  }
+}
+
+.snowflake {
+  position: absolute;
+  top: -12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
+  animation: snow-fall 4s linear infinite;
+}
+
+@keyframes snow-fall {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(15px, 140px);
+  }
+
+  100% {
+    transform: translate(-10px, 280px);
+  }
+}
+
+/* freeze weather when the game ends */
+.weather-paused .raindrop, 
+.weather-paused .snowflake {
+  animation-play-state: paused;
+}
+
 /*& Score and start button */
 .game-toolbar {
   position: relative;
@@ -42,7 +115,8 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 12px
+  padding: 12px;
+  z-index: 3;
 }
 
 .score-display {
@@ -117,7 +191,7 @@
 @keyframes butterfly-popup-in {
   from {
     opacity: 0;
-    transform: translate(10px) scale(0.9);
+    transform: translateY(10px) scale(0.9);
   }
 
   to {
@@ -133,6 +207,14 @@
 
   .try-again-button {
     transition: none;
+  } 
+
+  .scene-background {
+    transition: none;
+  }
+
+  .weather-layer {
+    display: none;
   }
 }
 

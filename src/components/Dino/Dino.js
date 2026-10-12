@@ -2,6 +2,24 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./Dino.css";
 
+import summerDay from "./img/summer-day.png";
+import summerNight from "./img/summer-night.png";
+import springDay from "./img/spring-day.png";
+import springNight from "./img/spring-night.png";
+import winterDay from "./img/winter-day.png";
+import winterNight from "./img/winter-night.png";
+
+const scenes = [
+  { name: "Summer Day", image: summerDay },
+  { name: "Summer Night", image: summerNight },
+  { name: "Spring Day", image: springDay },
+  { name: "Spring Night", image: springNight },
+  { name: "Winter Day", image: winterDay },
+  { name: "Winter Night", image: winterNight },
+];
+
+const pointsPerScene = 100;
+
 function Dino() {
   const dinoRef = useRef(null);
   const cactusRefs = useRef({});
@@ -16,6 +34,9 @@ function Dino() {
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const sceneIndex = Math.floor(score / pointsPerScene) % scenes.length;
+  const isSpring = sceneIndex === 2 || sceneIndex === 3;
+  const isWinter = sceneIndex === 4 || sceneIndex === 5;
 
   // physics settings
   const gravity = 2000;
@@ -185,6 +206,60 @@ function Dino() {
 
   return (
     <div className="game">
+
+      <div className="scene-backgrounds" aria-hidden="true">
+        {scenes.map((scene, index) => (
+          <div 
+            key={scene.name}
+            className="scene-background"
+            style={{
+              backgroundImage: `url(${scene.image})`,
+              opacity: index === sceneIndex ? 1 : 0,
+            }}
+          />
+        ))}
+      </div>
+
+      {isSpring && (
+        <div 
+          className={`weather-layer rain layer ${gameStarted ? "" : "weather-paused"}`}
+          aria-hidden="true"
+        > 
+        {Array.from({ length: 45}, (_, index) => (
+          <span
+            key={index}
+            className="raindrop"
+            style={{
+              left: `${(index * 37) % 100}%`,
+              animationDelay: `${-(index % 10) * 0.12}s`,
+              animationDuration: `${0.6 + (index % 4) * 0.1}s`,
+            }}
+            />
+        ))}
+        </div>
+      )}
+
+      {isWinter && (
+        <div 
+          className={`weather-layer snow layer ${gameStarted ? "" : "weather-paused"}`}
+          aria-hidden="true"
+        > 
+        {Array.from({ length: 30}, (_, index) => (
+          <span
+            key={index}
+            className="snowflake"
+            style={{
+              left: `${(index * 43) % 100}%`,
+              width: `${3 + (index % 4)}px`,
+              height: `${3 + (index % 4)}px`,
+              animationDelay: `${-(index % 12) * 0.5}s`,
+              animationDuration: `${3 + (index % 5) * 0.6}s`,
+            }}
+            />
+        ))}
+        </div>
+      )}
+
       <div className="game-toolbar">
         {!gameStarted && !gameOver && (
           <button onClick={startGame}>Start Game</button>
