@@ -18,7 +18,7 @@ const scenes = [
   { name: "Winter Night", image: winterNight },
 ];
 
-const pointsPerScene = 100;
+const pointsPerScene = 50;
 
 function Dino() {
   const dinoRef = useRef(null);
@@ -57,6 +57,17 @@ function Dino() {
       a.top < b.bottom &&
       a.bottom > b.top
     );
+  };
+
+  const getHitBox = (element, insetX, insetY) => {
+    const rect = element.getBoundingClientRect();
+
+    return {
+      left: rect.left + insetX,
+      right: rect.right - insetX,
+      top: rect.top + insetY,
+      bottom: rect.bottom - insetY,
+    };
   };
 
   // randomizing cactuses
@@ -148,7 +159,7 @@ function Dino() {
         const dino = dinoRef.current;
 
         if (dino) {
-          const dinoRect = dino.getBoundingClientRect();
+          const dinoRect = getHitBox(dino, 10, 10);
 
           for (const obstacle of nextObstacles) {
             const cactusGroup = cactusRefs.current[obstacle.id];
@@ -158,7 +169,7 @@ function Dino() {
             const cactuses = cactusGroup.querySelectorAll(".cactus");
 
             for (const cactus of cactuses) {
-              const cactusRect = cactus.getBoundingClientRect();
+              const cactusRect = getHitBox(cactus, 4, 4);
 
               if (isColliding(dinoRect, cactusRect)) {
                 setGameStarted(false);
