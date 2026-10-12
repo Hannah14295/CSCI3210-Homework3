@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./Dino.css";
 
 function Dino() {
@@ -51,6 +52,10 @@ function Dino() {
     // reset the dinosaur's physics
     dinoY.current = 0;
     velocityY.current = 0;
+
+    if (dinoRef.current) {
+      dinoRef.current.style.transform = "translateY(0px)";
+    }
 
     // reset the cactus position
     const initialObstacles = [createObstacle(1000)];
@@ -155,14 +160,22 @@ function Dino() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.code === "Space") {
-        event.preventDefault();
+      if (event.code !== "Space") return;
+      
+      // let focused buttons handle Space normally
+      if (event.target instanceof HTMLButtonElement) {
+        return;
+      }
 
-        if (!gameStarted) {
-          startGame();
-        } else {
-          jump();
-        }
+      event.preventDefault();
+
+      // ignore repeated events from holding down Space
+      if (event.repeat) return;
+
+      if (!gameStarted) {
+        startGame();
+      } else {
+        jump();
       }
     };
 
@@ -172,10 +185,14 @@ function Dino() {
 
   return (
     <div className="game">
-      <button onClick={startGame}>
-        {gameOver ? "Play Again" : "Start Game"}
-      </button>
-      Score: {score}
+      <div className="game-toolbar">
+        {!gameStarted && !gameOver && (
+          <button onClick={startGame}>Start Game</button>
+        )}
+
+        <span className="score-display">Score: {score}</span>
+      </div>
+
       <div id="dino" ref={dinoRef}></div>
 
       {obstacles.map((obstacle) => (
@@ -197,6 +214,27 @@ function Dino() {
         </div>
       ))}
 
+      {gameOver && createPortal(
+        <div className="game-over-overlay">
+          <section
+            className="game-over-popup"
+            role="dialog"
+            aria-labelledby="game-over-title"
+            aria-describedby="game-over-description"
+          >
+            <h2 id="game-over-title">Oops! 🌸</h2>
+            <p id="game-over-description">Your butterfly bumped into a flower!</p>
+            <p className="final-score">Final score: {score}</p>
+
+            <button 
+              className="try-again-button"
+              onClick={startGame}
+              autoFocus
+            >Try Again 🦋</button>
+          </section> 
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
