@@ -3,20 +3,21 @@ import "./Dino.css";
 
 function Dino() {
   const dinoRef = useRef(null);
-  const cactusRef = useRef(null);
+  const cactusRefs = useRef({});
   
   const scoreRef = useRef(0);
   const velocityY = useRef(0);
   const dinoY = useRef(0);
-  const cactusX = useRef(1000);
+  const nextObstacleID = useRef(0);
+  const obstaclesRef = useRef([]);
 
+  const [obstacles, setObstacles] = useState([]);
   const [score, setScore] = useState(0);
-  const [cactusCount, setCactusCount] = useState(1);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
 
   // physics settings
-  const gravity = 2200;
+  const gravity = 2000;
   const jumpStrength = 550;
   const groundY = 0;
   const cactusSpeed = 400;
@@ -37,9 +38,12 @@ function Dino() {
   };
 
   // randomizing cactuses
-  const randomizeCactus = () => {
-    const count = Math.floor(Math.random() * 3) + 1;
-    setCactusCount(count);
+  const createObstacle = (x) => {
+    return {
+      id: nextObstacleID.current++,
+      x: x,
+      count: Math.floor(Math.random() * 3) + 1,
+    };
   };
 
   // start function
@@ -49,8 +53,10 @@ function Dino() {
     velocityY.current = 0;
 
     // reset the cactus position
-    cactusX.current = 1000;
-    randomizeCactus();
+    const initialObstacles = [createObstacle(1000)];
+    obstaclesRef.current = initialObstacles;
+    setObstacles(initialObstacles);
+    cactusRefs.current = {};
 
     // reset the score
     setScore(0);
@@ -91,36 +97,48 @@ function Dino() {
           dinoRef.current.style.transform = `translateY(${dinoY.current}px)`;
         }
 
-        // move the cactus from right to left
-        cactusX.current -= cactusSpeed * deltaTime;
+        // move all obstacles and remove those off-screen
+        let nextObstacles = obstaclesRef.current.map((obstacle) => ({
+          ...obstacle,
+          x: obstacle.x - cactusSpeed * deltaTime,
+        }));
 
-        // reset the cactus after it leaves the screen
-        if (cactusX.current < -(cactusRef.current?.offsetWidth ?? 20)) {
-          cactusX.current = 1000;
-          randomizeCactus();
+        nextObstacles = nextObstacles.filter(
+          (obstacle) => obstacle.x > -100
+        );
+
+        // spawn a new obstacles when the previous one reaches the threshold
+        const lastObstacle = nextObstacles[nextObstacles.length - 1];
+
+        if (!lastObstacle || lastObstacle.x < 650) {
+          nextObstacles.push(createObstacle(1000));
         }
 
-        // apply the cactus position
-        if (cactusRef.current) {
-          cactusRef.current.style.left = `${cactusX.current}px`;
-        }
+        // update React state so the obstacle positions render correctly
+        obstaclesRef.current = nextObstacles;
+        setObstacles(nextObstacles);
 
         // check for collisions
         const dino = dinoRef.current;
-        const cactuses = cactusRef.current?.querySelectorAll(".cactus");
 
-        if (dino && cactuses) {
+        if (dino) {
           const dinoRect = dino.getBoundingClientRect();
 
-          for (const cactus of cactuses) {
-            const cactusRect = cactus.getBoundingClientRect();
+          for (const obstacle of nextObstacles) {
+            const cactusGroup = cactusRefs.current[obstacle.id];
 
-            const collision = isColliding(dinoRect, cactusRect);
+            if (!cactusGroup) continue;
 
-            if (collision) {
-              setGameStarted(false);
-              setGameOver(true);
-              return;
+            const cactuses = cactusGroup.querySelectorAll(".cactus");
+
+            for (const cactus of cactuses) {
+              const cactusRect = cactus.getBoundingClientRect();
+
+              if (isColliding(dinoRect, cactusRect)) {
+                setGameStarted(false);
+                setGameOver(true);
+                return;
+              }
             }
           }
         }
@@ -159,11 +177,26 @@ function Dino() {
       </button>
       Score: {score}
       <div id="dino" ref={dinoRef}></div>
-      <div id="cactus" ref={cactusRef} className={gameStarted ? "running" : ""}>
-        {Array.from({length: cactusCount}, (_, index) => (
-          <div className="cactus" key={index}></div>
+
+      {obstacles.map((obstacle) => (
+        <div
+          className="obstacle"
+          key={obstacle.id}
+          ref={(element) => {
+            if (element) {
+              cactusRefs.current[obstacle.id] = element;
+            } else {
+              delete cactusRefs.current[obstacle.id];
+            }
+          }}
+          style={{ left: `${obstacle.x}px` }}
+        >
+          {Array.from({ length: obstacle.count }, (_, index) => (
+            <div className="cactus" key={index}></div>
         ))}
-      </div>
+        </div>
+      ))}
+
     </div>
   );
 }
