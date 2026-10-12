@@ -316,12 +316,19 @@ function Game() {
       )}
 
       <div className="game-toolbar">
-        {!gameStarted && !gameOver && (
-          <button onClick={startGame}>Start Game</button>
-        )}
-
         <span className="score-display">Score: {score}</span>
       </div>
+
+      <button
+        className={`start-game-button ${
+          gameStarted || gameOver ? "start-game-button-hidden" : ""
+        }`}
+        onClick={(event) => {
+          event.currentTarget.blur();
+          startGame();
+        }}
+        disabled={gameStarted || gameOver}
+      >Start Game</button>
 
       <div className="best-score-display">Best: {bestScore}</div>
 
