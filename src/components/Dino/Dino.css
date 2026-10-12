@@ -5,27 +5,31 @@
   border: 1px solid black;
   margin: auto;
   overflow: hidden;
+
+  background-image: url("./img/sunset.png");
+  background-size: cover;
+  background-position: center;
 }
 
 #dino {
   width: 50px;
   height: 50px;
-  background-image: url(img/trex.png);
+  background-image: url("./img/butterfly.png");
   background-size: 50px 50px;
-  position: absolute;
-  bottom: 25px;
+  position: absolute; 
+  bottom: 15px;
   left: 250px;
 }
 
 .obstacle {
   position: absolute;
-  bottom: 25px;
+  bottom: 15px;
   display: flex;
 }
 
 .cactus {
   width: 20px;
   height: 40px;
-  background-image: url("img/cactus.png");
+  background-image: url("./img/flower.png");
   background-size: 20px 40px;
 }
