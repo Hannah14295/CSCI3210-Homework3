@@ -1,3 +1,28 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 40px 20px;
+
+  background: linear-gradient(
+    180deg,
+    #e8e5ff 0%,
+    #eaf6ff 55%,
+    #e8f7ed 100%
+  );
+}
+
+.game-header{
+  margin-bottom: 30px;
+}
+
+.game-header h1{
+  font-family: "Comic Sans MS", sans-serif;
+  font-size: 35px;
+  color: #FF0052;
+}
+
+.game-header p{
+  font-family: "Comic Sans MS", sans-serif;
+  color: #571089;
 }

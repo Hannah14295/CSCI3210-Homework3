@@ -18,7 +18,7 @@ function Dino() {
 
   // physics settings
   const gravity = 2000;
-  const jumpStrength = 550;
+  const jumpStrength = 570;
   const groundY = 0;
   const cactusSpeed = 400;
 
