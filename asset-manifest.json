@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "/CSCI3210-Homework3/static/css/main.9ed74ea3.css",
-    "main.js": "/CSCI3210-Homework3/static/js/main.3ec1a7a4.js",
+    "main.js": "/CSCI3210-Homework3/static/js/main.20e45c9e.js",
+    "static/media/background_music.mp3": "/CSCI3210-Homework3/static/media/background_music.ae57ce7d70170b431fca.mp3",
     "static/media/summer-night.png": "/CSCI3210-Homework3/static/media/summer-night.8167c109133efd00b139.png",
     "static/media/winter-night.png": "/CSCI3210-Homework3/static/media/winter-night.ab64e03bbefebd7f01d4.png",
     "static/media/spring-day.png": "/CSCI3210-Homework3/static/media/spring-day.f2c3c3e9197a3fd1a466.png",
@@ -12,10 +13,10 @@
     "static/media/butterfly.png": "/CSCI3210-Homework3/static/media/butterfly.3126b31493fc72e5b7b3.png",
     "index.html": "/CSCI3210-Homework3/index.html",
     "main.9ed74ea3.css.map": "/CSCI3210-Homework3/static/css/main.9ed74ea3.css.map",
-    "main.3ec1a7a4.js.map": "/CSCI3210-Homework3/static/js/main.3ec1a7a4.js.map"
+    "main.20e45c9e.js.map": "/CSCI3210-Homework3/static/js/main.20e45c9e.js.map"
   },
   "entrypoints": [
     "static/css/main.9ed74ea3.css",
-    "static/js/main.3ec1a7a4.js"
+    "static/js/main.20e45c9e.js"
   ]
 }
