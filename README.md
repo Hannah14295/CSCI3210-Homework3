@@ -1,4 +1,8 @@
-# Getting Started with Create React App
+<h1 align="center">Web Application Development</h1>
+
+<p>Homework 3: Dino Game with React</p>
+
+<h2 align="center">React ReadMe</h2>
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
