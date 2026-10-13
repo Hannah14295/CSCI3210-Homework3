@@ -2,6 +2,14 @@
 
 <p>Homework 3: Dino Game with React</p>
 
+<h2>Music Credits</h2>
+
+<p>
+  Music: “Autumn Dreams” by Abbynoise on
+  <a href="https://uppbeat.io/c/abbynoise">Uppbeat</a><br>
+  License code: BXSHEQRGQ1KF7R9D
+</p>
+
 <h2 align="center">React ReadMe</h2>
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./Game.css";
+import backgroundMusic from "./audio/background_music.mp3";
 
 import summerDay from "./img/summer-day.png";
 import summerNight from "./img/summer-night.png";
@@ -28,6 +29,7 @@ const obstacleHitBoxSettings = {
 };
 
 function Game() {
+  const musicRef = useRef(null);
   const playerRef = useRef(null);
   const obstacleGroupRefs = useRef({});
   
@@ -100,6 +102,15 @@ function Game() {
 
   // start function
   const startGame = () => {
+    if (musicRef.current) {
+      musicRef.current.volume = 0.3;
+      musicRef.current.currentTime = 0;
+
+      musicRef.current.play().catch((error) => {
+        console.warn("Music could not start:", error);
+      });
+    }
+
     // reset the players's physics
     playerY.current = 0;
     velocityY.current = 0;
@@ -126,6 +137,10 @@ function Game() {
 
   useEffect(() => {
     if (!gameOver) return;
+
+    if (musicRef.current) {
+      musicRef.current.pause();
+    }
 
     const finalScore = Math.floor(scoreRef.current);
 
@@ -261,6 +276,13 @@ function Game() {
 
   return (
     <div className="game">
+
+      <audio 
+        ref={musicRef}
+        src={backgroundMusic}
+        loop
+        preload="auto"
+      />
 
       <div className="scene-backgrounds" aria-hidden="true">
         {scenes.map((scene, index) => (
