@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/CSCI3210-Homework3/static/css/main.9ed74ea3.css",
+    "main.js": "/CSCI3210-Homework3/static/js/main.3ec1a7a4.js",
+    "static/media/summer-night.png": "/CSCI3210-Homework3/static/media/summer-night.8167c109133efd00b139.png",
+    "static/media/winter-night.png": "/CSCI3210-Homework3/static/media/winter-night.ab64e03bbefebd7f01d4.png",
+    "static/media/spring-day.png": "/CSCI3210-Homework3/static/media/spring-day.f2c3c3e9197a3fd1a466.png",
+    "static/media/spring-night.png": "/CSCI3210-Homework3/static/media/spring-night.9f113ff40d93479f603e.png",
+    "static/media/winter-day.png": "/CSCI3210-Homework3/static/media/winter-day.6b07a8be5b3817a68e5d.png",
+    "static/media/summer-day.png": "/CSCI3210-Homework3/static/media/summer-day.4a590ee76e08dd437c8c.png",
+    "static/media/flower.png": "/CSCI3210-Homework3/static/media/flower.0e7c169f7eee4bcfb296.png",
+    "static/media/butterfly.png": "/CSCI3210-Homework3/static/media/butterfly.3126b31493fc72e5b7b3.png",
+    "index.html": "/CSCI3210-Homework3/index.html",
+    "main.9ed74ea3.css.map": "/CSCI3210-Homework3/static/css/main.9ed74ea3.css.map",
+    "main.3ec1a7a4.js.map": "/CSCI3210-Homework3/static/js/main.3ec1a7a4.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9ed74ea3.css",
+    "static/js/main.3ec1a7a4.js"
+  ]
+}
